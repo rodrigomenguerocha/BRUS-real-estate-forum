@@ -1789,8 +1789,10 @@ function setLang(lang) {
       overlayCard.style.top = y + 'px';
       overlayCard.style.width = w + 'px';
       overlayCard.style.height = h + 'px';
-      // Padding starts at 1.5rem (matching source .day-card) and grows to 3rem when fully zoomed
-      const cardPad = 1.5 + zoomP * 1.5;
+      // Padding starts matching source .day-card (0.8rem mobile, 1.5rem desktop) and grows to 3rem when fully zoomed
+      const cardPadStart = viewportW < 480 ? 0.8 : 1.5;
+      const cardPadEnd = 3;
+      const cardPad = cardPadStart + zoomP * (cardPadEnd - cardPadStart);
       overlayCard.style.padding = cardPad + 'rem';
       overlayCard.style.opacity = '1';
 
@@ -1798,7 +1800,7 @@ function setLang(lang) {
       const badge = overlayCard.querySelector('.day-badge');
       if(badge){
         var badgeStart = viewportW < 480 ? 0.8 : 1.5;
-        var badgeEnd = 1.5 + 1.5; // matches cardPad at full zoom (3rem)
+        var badgeEnd = cardPadEnd; // matches cardPad at full zoom (3rem)
         var badgePos = badgeStart + zoomP * (badgeEnd - badgeStart);
         badge.style.top = badgePos + 'rem';
         badge.style.right = badgePos + 'rem';
