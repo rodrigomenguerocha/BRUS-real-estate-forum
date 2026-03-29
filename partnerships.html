@@ -3,10 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BR/US Real Estate Forum 2026 — First Edition</title>
+<title>BR/US Real Estate Forum 2026 — Partnership Opportunities</title>
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet">
-<script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
 <style>
   @font-face {
     font-family: 'NYU Perstare';
@@ -40,7 +38,7 @@
 
   /* ===== LANGUAGE TOGGLE ===== */
   .lang-toggle {
-    position: absolute; top: 1.2rem; right: 1.5rem; z-index: 10;
+    position: fixed; top: 1.2rem; right: 1.5rem; z-index: 100;
     display: flex; border: 1px solid rgba(87,6,140,0.25); border-radius: 3px;
     overflow: hidden; background: rgba(255,255,255,0.95);
     backdrop-filter: blur(8px); box-shadow: 0 2px 12px rgba(0,0,0,0.08);
@@ -529,381 +527,6 @@
     text-transform: uppercase; margin: 0 auto; max-width: none;
   }
 
-  /* ===== MAP SECTION ===== */
-  .slide-map {
-    position: relative;
-    height: 1300vh;
-    z-index: 0 !important;
-    background: #e8e8e8;
-  }
-  .map-sticky {
-    position: sticky;
-    top: 0;
-    width: 100%;
-    height: 100vh;
-    overflow: hidden;
-  }
-  #mapbox-map {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
-    background: #e8e8e8;
-  }
-  .mapboxgl-canvas { outline: none; }
-  .mapboxgl-ctrl-bottom-left, .mapboxgl-ctrl-bottom-right { display: none !important; }
-  .map-overlay { display: none; }
-  .map-venue-cards {
-    position: absolute;
-    bottom: 2.5rem;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 1rem;
-    z-index: 3;
-    pointer-events: none;
-  }
-  .map-venue-card {
-    background: rgba(255,255,255,0.88);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(0,0,0,0.06);
-    border-radius: 12px;
-    padding: 0;
-    overflow: hidden;
-    min-width: 280px;
-    max-width: 340px;
-    color: var(--black);
-    box-shadow: 0 4px 24px rgba(0,0,0,0.10);
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.5s ease, transform 0.5s ease;
-  }
-  .map-venue-card.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  .map-venue-img {
-    width: 100%;
-    height: 120px;
-    object-fit: cover;
-    display: block;
-  }
-  .map-venue-info {
-    padding: 0.85rem 1.2rem 1rem;
-  }
-  .map-venue-tag {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.55rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--violet);
-    margin-bottom: 0.5rem;
-  }
-  .map-venue-name {
-    font-family: 'PP Neue Montreal', 'Helvetica Neue', sans-serif;
-    font-weight: 500;
-    font-size: 1rem;
-    line-height: 1.3;
-    margin-bottom: 0.25rem;
-    color: var(--black);
-  }
-  .map-venue-addr {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.65rem;
-    color: rgba(0,0,0,0.45);
-    letter-spacing: 0.05em;
-  }
-  /* Map phase titles (Day One, Day Two, etc.) */
-  .map-phase-title {
-    position: absolute;
-    top: 2.5rem;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 3;
-    font-family: 'NYU Perstare', 'Frank Ruhl Libre', Georgia, serif;
-    font-weight: 700;
-    font-size: 2.2rem;
-    color: var(--black);
-    letter-spacing: -0.01em;
-    opacity: 0;
-    transition: opacity 0.5s ease;
-    pointer-events: none;
-    text-align: center;
-    white-space: nowrap;
-  }
-  .map-phase-title.visible { opacity: 1; }
-  .map-phase-title .map-phase-sub {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.55rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--violet);
-    margin-bottom: 0.5rem;
-    font-weight: 400;
-  }
-  @media (max-width: 768px) {
-    .map-phase-title { font-size: 1.6rem; top: 1.5rem; }
-    .map-phase-title .map-phase-sub { font-size: 0.5rem; }
-  }
-  @media (max-width: 480px) {
-    .map-phase-title { font-size: 1.3rem; top: 1.2rem; }
-  }
-
-  /* POI grey dots and popup cards */
-  .poi-dot {
-    width: 10px; height: 10px;
-    background: #999;
-    border: 1.5px solid #fff;
-    border-radius: 50%;
-    cursor: pointer;
-    display: none;
-    transition: background 0.2s;
-  }
-  .poi-dot.visible {
-    display: block;
-  }
-  .poi-dot:hover { background: #8900e1; }
-  /* Hotel numbered markers — same structure as venue/POI dots */
-  .hotel-dot {
-    width: 24px; height: 24px;
-    border-radius: 50%;
-    background: var(--violet);
-    border: 2px solid #fff;
-    color: #fff;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.6rem;
-    font-weight: 700;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-  }
-  .hotel-dot.visible {
-    display: flex;
-  }
-  .hotel-dot:hover {
-    background: var(--ultra);
-  }
-  /* Landmark labels (visible during hotel phase) */
-  .landmark-pin {
-    display: none;
-    align-items: center;
-    gap: 4px;
-    cursor: default;
-    white-space: nowrap;
-  }
-  .landmark-pin.visible { display: flex; }
-  .landmark-pin-dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: rgba(0,0,0,0.3);
-    flex-shrink: 0;
-  }
-  .landmark-pin-label {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.55rem;
-    letter-spacing: 0.06em;
-    color: rgba(0,0,0,0.4);
-    text-transform: uppercase;
-  }
-  /* Hotel info card — same pattern as .poi-popup (white bg) */
-  .hotel-info-card {
-    position: absolute;
-    bottom: 2.5rem;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 5;
-    background: rgba(255,255,255,0.92);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(0,0,0,0.06);
-    border-radius: 12px;
-    padding: 1.2rem 1.5rem;
-    max-width: 380px;
-    width: 90%;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.12);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-  }
-  .hotel-info-card.visible {
-    opacity: 1;
-    pointer-events: auto;
-  }
-  .hotel-info-name {
-    font-family: 'PP Neue Montreal', 'Helvetica Neue', sans-serif;
-    font-weight: 500;
-    font-size: 0.95rem;
-    color: var(--black);
-    margin-bottom: 0.15rem;
-    padding-right: 1.5rem;
-  }
-  .hotel-info-meta {
-    display: flex;
-    align-items: baseline;
-    gap: 0.4rem;
-    margin-bottom: 0.3rem;
-  }
-  .hotel-info-stars {
-    color: #F0C040;
-    font-size: 0.65rem;
-    letter-spacing: 1px;
-  }
-  .hotel-info-price {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.55rem;
-    color: rgba(0,0,0,0.35);
-  }
-  .hotel-info-addr {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.55rem;
-    color: rgba(0,0,0,0.4);
-    letter-spacing: 0.04em;
-    margin-bottom: 0.5rem;
-  }
-  .hotel-info-desc {
-    font-family: 'PP Neue Montreal', 'Helvetica Neue', sans-serif;
-    font-size: 0.75rem;
-    line-height: 1.55;
-    color: rgba(0,0,0,0.7);
-    margin-bottom: 0.7rem;
-  }
-  .hotel-info-book {
-    display: inline-block;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.65rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--violet);
-    border: 1px solid rgba(87,6,140,0.3);
-    border-radius: 4px;
-    padding: 4px 14px;
-    text-decoration: none;
-    transition: background 0.25s ease, color 0.25s ease;
-  }
-  .hotel-info-book:hover {
-    background: var(--violet);
-    color: #fff;
-  }
-  .hotel-info-close {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.7rem;
-    background: none;
-    border: none;
-    color: rgba(0,0,0,0.4);
-    font-size: 1.2rem;
-    cursor: pointer;
-    line-height: 1;
-  }
-  .poi-popup {
-    position: absolute;
-    bottom: 2.5rem;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 5;
-    background: rgba(255,255,255,0.92);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(0,0,0,0.06);
-    border-radius: 12px;
-    padding: 1.2rem 1.5rem;
-    max-width: 380px;
-    width: 90%;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.12);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-  }
-  .poi-popup.visible {
-    opacity: 1;
-    pointer-events: auto;
-  }
-  .poi-popup-close {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.7rem;
-    background: none;
-    border: none;
-    font-size: 1.2rem;
-    color: rgba(0,0,0,0.4);
-    cursor: pointer;
-    line-height: 1;
-  }
-  .poi-popup-name {
-    font-family: 'PP Neue Montreal', 'Helvetica Neue', sans-serif;
-    font-weight: 500;
-    font-size: 0.95rem;
-    margin-bottom: 0.15rem;
-    color: var(--black);
-    padding-right: 1.5rem;
-  }
-  .poi-popup-dev {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.55rem;
-    letter-spacing: 0.08em;
-    color: var(--violet);
-    margin-bottom: 0.1rem;
-  }
-  .poi-popup-loc {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.55rem;
-    color: rgba(0,0,0,0.4);
-    margin-bottom: 0.6rem;
-  }
-  .poi-popup-desc {
-    font-family: 'PP Neue Montreal', 'Helvetica Neue', sans-serif;
-    font-size: 0.75rem;
-    line-height: 1.55;
-    color: rgba(0,0,0,0.7);
-  }
-
-  /* Map section follows NY Week which scrolls off to reveal it */
-  .slide-map + .slide, .slide-map ~ section:not(.slide-map) {
-    position: relative;
-    z-index: 1;
-  }
-
-  @media (max-width: 768px) {
-    .map-overlay { padding: 3rem 1.5rem; }
-    .map-overlay h2 { font-size: 2rem; }
-    .map-venue-cards {
-      left: 1rem;
-      right: 1rem;
-      bottom: 1rem;
-      transform: none;
-      display: block;
-      width: auto;
-    }
-    .map-venue-card {
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      min-width: 0;
-      max-width: none;
-      width: 100%;
-      font-size: 0.85rem;
-    }
-    .map-venue-img { height: 180px; }
-    .map-venue-info { padding: 0.6rem 0.9rem 0.7rem; }
-  }
-  @media (max-width: 480px) {
-    .map-overlay { padding: 2rem 0.75rem; }
-    .map-overlay h2 { font-size: 1.6rem; }
-    .map-venue-cards {
-      left: 0.75rem;
-      right: 0.75rem;
-      bottom: 0.75rem;
-    }
-    .map-venue-img { height: 160px; }
-    .map-venue-info { padding: 0.6rem 0.8rem 0.7rem; }
-    .map-venue-name { font-size: 0.85rem; }
-    .map-venue-addr { font-size: 0.55rem; }
-  }
-
   @media print {
     .slide { page-break-after: always; page-break-inside: avoid; }
     .lang-toggle { display: none; }
@@ -977,12 +600,13 @@
 </head>
 <body>
 
+<div class="lang-toggle">
+  <button class="lang-btn active" onclick="setLang('en')">EN</button>
+  <button class="lang-btn" onclick="setLang('pt')">PT</button>
+</div>
+
 <!-- ===== 01 COVER ===== -->
 <section class="slide slide-cover">
-  <div class="lang-toggle">
-    <button class="lang-btn active" onclick="setLang('en')">EN</button>
-    <button class="lang-btn" onclick="setLang('pt')">PT</button>
-  </div>
   <div class="cover-content" id="cover-content">
   <div class="cover-co">
     <span class="cover-label">Co-organized by</span>
@@ -1026,8 +650,8 @@
   </div>
   <div class="cover-wm"><span class="cc">BR</span><span class="s">/</span><span class="cc">US</span></div>
   <div class="cover-desc">Real Estate Forum</div>
-  <div class="cover-subtitle" data-lang="en">First Edition</div>
-  <div class="cover-subtitle" data-lang="pt">Primeira Edição</div>
+  <div class="cover-subtitle" data-lang="en">Partnership Opportunities</div>
+  <div class="cover-subtitle" data-lang="pt">Oportunidades de Parceria</div>
   <div class="cover-meta">June 10–13, 2026 · New York City · Confidential</div>
   </div>
 </section>
@@ -1292,99 +916,285 @@
   </div>
 </section>
 
-<!-- ===== 05 VENUES MAP ===== -->
-<section class="slide-map" id="slide-map">
-  <div class="map-sticky">
-    <div id="mapbox-map" style="width:100%;height:100%;"></div>
-    <div class="map-overlay">
-      <div class="sn" data-lang="en">04 — Venues</div>
-      <div class="sn" data-lang="pt">04 — Locais</div>
-      <h2 data-lang="en">Two stages.<br>One city.</h2>
-      <h2 data-lang="pt">Dois palcos.<br>Uma cidade.</h2>
+<!-- ===== 05 PARTNERSHIP TIERS ===== -->
+<section class="slide">
+  <div class="sn" data-lang="en">04 — Partnership Tiers</div>
+  <div class="sn" data-lang="pt">04 — Níveis de Parceria</div>
+  <h2 data-lang="en">Position your firm at the<br>center of the conversation.</h2>
+  <h2 data-lang="pt">Posicione sua empresa no<br>centro da conversa.</h2>
+  <div class="tier-grid">
+    <div class="tier-cell tier-header" style="border-bottom:1px solid rgba(255,255,255,0.1);"></div>
+    <div class="tier-cell tier-header founding">Founding Partner</div>
+    <div class="tier-cell tier-header">Strategic Partner</div>
+    <div class="tier-cell tier-header">Supporting Partner</div>
+
+    <div class="tier-cell tier-label"><span data-lang="en">Investment</span><span data-lang="pt">Investimento</span></div>
+    <div class="tier-cell founding-col"><span class="tier-price" style="color:var(--violet);">$18,000</span></div>
+    <div class="tier-cell"><span class="tier-price">$7,000</span></div>
+    <div class="tier-cell"><span class="tier-price">$3,000</span></div>
+
+    <div class="tier-cell tier-label"><span data-lang="en">Available</span><span data-lang="pt">Vagas</span></div>
+    <div class="tier-cell founding-col"><span style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;font-weight:600;color:var(--violet);">1 <span style="font-weight:400;font-size:0.55rem;color:var(--tgray);"><span data-lang="en">slot</span><span data-lang="pt">vaga</span></span></span></div>
+    <div class="tier-cell"><span style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;font-weight:600;">3 <span style="font-weight:400;font-size:0.55rem;color:var(--tgray);"><span data-lang="en">slots</span><span data-lang="pt">vagas</span></span></span></div>
+    <div class="tier-cell"><span style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;font-weight:600;">4 <span style="font-weight:400;font-size:0.55rem;color:var(--tgray);"><span data-lang="en">slots</span><span data-lang="pt">vagas</span></span></span></div>
+
+    <div class="tier-cell tier-label"><span data-lang="en">Guest Invitations</span><span data-lang="pt">Convites</span></div>
+    <div class="tier-cell founding-col"><span class="accent" style="font-weight:700;">15</span></div>
+    <div class="tier-cell"><span class="accent">7</span></div>
+    <div class="tier-cell"><span class="accent">3</span></div>
+
+    <div class="tier-cell tier-label"><span data-lang="en">Logo on All Materials</span><span data-lang="pt">Logo em Todos os Materiais</span></div>
+    <div class="tier-cell founding-col"><span class="check">+</span></div>
+    <div class="tier-cell"><span class="check">+</span></div>
+    <div class="tier-cell"><span class="check">+</span></div>
+
+    <div class="tier-cell tier-label"><span data-lang="en">Panel Participation</span><span data-lang="pt">Participação em Painel</span></div>
+    <div class="tier-cell founding-col"><span class="check">+</span></div>
+    <div class="tier-cell"><span class="check">+</span></div>
+    <div class="tier-cell"><span class="dash">—</span></div>
+
+    <div class="tier-cell tier-label"><span data-lang="en">Attendee Directory</span><span data-lang="pt">Diretório de Participantes</span></div>
+    <div class="tier-cell founding-col"><span class="check">+</span></div>
+    <div class="tier-cell"><span class="check">+</span></div>
+    <div class="tier-cell"><span class="dash">—</span></div>
+
+    <div class="tier-cell tier-label">Keynote (30 min)</div>
+    <div class="tier-cell founding-col"><span class="check">+</span></div>
+    <div class="tier-cell"><span class="dash">—</span></div>
+    <div class="tier-cell"><span class="dash">—</span></div>
+
+    <div class="tier-cell tier-label"><span data-lang="en">Logo with Co-Organizers</span><span data-lang="pt">Logo com Co-Organizadores</span></div>
+    <div class="tier-cell founding-col"><span class="check">+</span></div>
+    <div class="tier-cell"><span class="dash">—</span></div>
+    <div class="tier-cell"><span class="dash">—</span></div>
+
+    <div class="tier-cell tier-label"><span data-lang="en">Cocktail Naming</span><span data-lang="pt">Naming do Cocktail</span></div>
+    <div class="tier-cell founding-col"><span class="check">+</span></div>
+    <div class="tier-cell"><span class="dash">—</span></div>
+    <div class="tier-cell"><span class="dash">—</span></div>
+  </div>
+</section>
+
+<!-- ===== 06 FOUNDING PARTNER ===== -->
+<section class="slide slide-deep">
+  <div class="sn">05 — Founding Partner · $18,000</div>
+  <div style="margin-bottom:0.5rem;"><span style="font-family:'JetBrains Mono',monospace;font-size:0.5rem;letter-spacing:0.1em;text-transform:uppercase;padding:0.25rem 0.6rem;border:1px solid var(--ultra);color:var(--ultra);border-radius:2px;"><span data-lang="en">1 position available</span><span data-lang="pt">1 vaga disponível</span></span></div>
+  <h2 data-lang="en">Maximum presence.<br>Institutional alignment.</h2>
+  <h2 data-lang="pt">Presença máxima.<br>Alinhamento institucional.</h2>
+  <p data-lang="en">The Founding Partner is presented alongside Instituto Cidades Responsivas and NYU Schack — not below them. Your brand appears in the co-organizer lockup across all materials, digital and physical.</p>
+  <p data-lang="pt">O Founding Partner é apresentado ao lado do Instituto Cidades Responsivas e do NYU Schack — não abaixo. Sua marca aparece no lockup de co-organizadores em todos os materiais, digitais e físicos.</p>
+  <div class="detail-grid cols-3">
+    <div class="detail-item">
+      <div class="detail-num">15</div>
+      <div class="detail-label"><span data-lang="en">Guest Invitations</span><span data-lang="pt">Convites</span></div>
+      <div class="detail-desc" data-lang="en">Direct invitations for clients, prospects, or team members to the full-day program and Fasano cocktail.</div>
+      <div class="detail-desc" data-lang="pt">Convites diretos para clientes, prospects ou membros da equipe para o programa completo e cocktail no Fasano.</div>
     </div>
-    <div class="map-phase-title" id="title-day1">
-      <div class="map-phase-sub" data-lang="en">Day One</div>
-      <div class="map-phase-sub" data-lang="pt">Dia Um</div>
-      <div data-lang="en">Wed, June 10</div>
-      <div data-lang="pt">Qua, 10 de Junho</div>
+    <div class="detail-item">
+      <div class="detail-num" style="font-size:1.2rem;">Panel</div>
+      <div class="detail-label"><span data-lang="en">Panel Participation</span><span data-lang="pt">Participação em Painel</span></div>
+      <div class="detail-desc" data-lang="en">Guaranteed seat on one of the forum's panels, curated in partnership with you.</div>
+      <div class="detail-desc" data-lang="pt">Lugar garantido em um dos painéis do fórum, curado em parceria com você.</div>
     </div>
-    <div class="map-phase-title" id="title-day2">
-      <div class="map-phase-sub" data-lang="en">Day Two</div>
-      <div class="map-phase-sub" data-lang="pt">Dia Dois</div>
-      <div data-lang="en">Thu, June 11</div>
-      <div data-lang="pt">Qui, 11 de Junho</div>
+    <div class="detail-item">
+      <div class="detail-num">30<span style="font-size:0.7em;"> min</span></div>
+      <div class="detail-label">Keynote</div>
+      <div class="detail-desc" data-lang="en">Exclusive speaking slot to present your firm's vision or thesis to the full audience of 80 leaders.</div>
+      <div class="detail-desc" data-lang="pt">Slot exclusivo para apresentar a visão ou tese da sua empresa para toda a audiência de 80 líderes.</div>
     </div>
-    <div class="map-phase-title" id="title-day3">
-      <div class="map-phase-sub" data-lang="en">Day Three</div>
-      <div class="map-phase-sub" data-lang="pt">Dia Três</div>
-      <div data-lang="en">Fri, June 12</div>
-      <div data-lang="pt">Sex, 12 de Junho</div>
+    <div class="detail-item">
+      <div class="detail-num" style="font-size:1.2rem;">ICR + NYU + You</div>
+      <div class="detail-label"><span data-lang="en">Co-Organizer Lockup</span><span data-lang="pt">Lockup Co-Organizadores</span></div>
+      <div class="detail-desc" data-lang="en">Your logo at equal weight with both institutions across invitations, backdrop, badges, and digital assets.</div>
+      <div class="detail-desc" data-lang="pt">Seu logo com peso visual igual ao das duas instituições nos convites, backdrop, crachás e materiais digitais.</div>
     </div>
-    <div class="map-phase-title" id="title-explore">
-      <div class="map-phase-sub" data-lang="en">Beyond the Forum</div>
-      <div class="map-phase-sub" data-lang="pt">Além do Fórum</div>
-      <div data-lang="en">The whole city to explore</div>
-      <div data-lang="pt">Uma cidade inteira para explorar</div>
+    <div class="detail-item">
+      <div class="detail-num" style="font-size:1.2rem;">Directory</div>
+      <div class="detail-label"><span data-lang="en">Curated Attendee Directory</span><span data-lang="pt">Diretório Curado de Participantes</span></div>
+      <div class="detail-desc" data-lang="en">Full access to the curated attendee directory — name, title, firm, and LinkedIn of every confirmed participant. Delivered before and after the event.</div>
+      <div class="detail-desc" data-lang="pt">Acesso completo ao diretório curado de participantes — nome, cargo, empresa e LinkedIn de cada participante confirmado. Entregue antes e depois do evento.</div>
     </div>
-    <div class="map-phase-title" id="title-hotels">
-      <div class="map-phase-sub" data-lang="en">Accommodation</div>
-      <div class="map-phase-sub" data-lang="pt">Hospedagem</div>
-      <div data-lang="en">Where to Stay</div>
-      <div data-lang="pt">Onde Ficar</div>
-    </div>
-    <!-- Hotel info popup card on map -->
-    <div class="hotel-info-card" id="hotel-info-card">
-      <button class="hotel-info-close" id="hotel-info-close">&times;</button>
-      <div class="hotel-info-name" id="hotel-info-name"></div>
-      <div class="hotel-info-meta">
-        <span class="hotel-info-stars" id="hotel-info-stars"></span>
-        <span class="hotel-info-price" id="hotel-info-price"></span>
-      </div>
-      <div class="hotel-info-addr" id="hotel-info-addr"></div>
-      <div class="hotel-info-desc" id="hotel-info-desc"></div>
-      <a class="hotel-info-book" id="hotel-info-book" href="#" target="_blank" rel="noopener" data-lang="en">Book Now</a>
-      <a class="hotel-info-book" id="hotel-info-book-pt" href="#" target="_blank" rel="noopener" data-lang="pt">Reservar</a>
-    </div>
-    <div class="map-venue-cards">
-      <div class="map-venue-card" id="card-union">
-        <img class="map-venue-img" src="img/nyu_wagner.jpg" alt="NYU Wagner">
-        <div class="map-venue-info">
-          <div class="map-venue-tag" data-lang="en">Wed · Jun 10</div>
-          <div class="map-venue-tag" data-lang="pt">Qua · 10 Jun</div>
-          <div class="map-venue-name">NYU Wagner</div>
-          <div class="map-venue-addr">BR/US Real Estate Forum</div>
-        </div>
-      </div>
-      <div class="map-venue-card" id="card-kimmel">
-        <img class="map-venue-img" src="img/kimmel_auditorium.jpg" alt="NYU Kimmel Center">
-        <div class="map-venue-info">
-          <div class="map-venue-tag" data-lang="en">Thu · Jun 11</div>
-          <div class="map-venue-tag" data-lang="pt">Qui · 11 Jun</div>
-          <div class="map-venue-name">NYU Kimmel Center</div>
-          <div class="map-venue-addr">NYU National Conference on Real Estate Development</div>
-        </div>
-      </div>
-      <div class="map-venue-card" id="card-fasano">
-        <img class="map-venue-img" src="img/fasano_baretto.jpg" alt="Fasano New York Baretto">
-        <div class="map-venue-info">
-          <div class="map-venue-tag" data-lang="en">Fri · Jun 12</div>
-          <div class="map-venue-tag" data-lang="pt">Sex · 12 Jun</div>
-          <div class="map-venue-name">Fasano New York</div>
-          <div class="map-venue-addr" data-lang="en">Closing Cocktail</div>
-          <div class="map-venue-addr" data-lang="pt">Cocktail de Encerramento</div>
-        </div>
-      </div>
-    </div>
-    <!-- POI popup card -->
-    <div class="poi-popup" id="poi-popup">
-      <button class="poi-popup-close" id="poi-popup-close">&times;</button>
-      <div class="poi-popup-name" id="poi-popup-name"></div>
-      <div class="poi-popup-dev" id="poi-popup-dev"></div>
-      <div class="poi-popup-loc" id="poi-popup-loc"></div>
-      <div class="poi-popup-desc" id="poi-popup-desc"></div>
+    <div class="detail-item">
+      <div class="detail-num" style="font-size:1.2rem;">Cocktail</div>
+      <div class="detail-label"><span data-lang="en">Closing Cocktail Naming</span><span data-lang="pt">Naming do Cocktail de Encerramento</span></div>
+      <div class="detail-desc" data-lang="en">The closing reception at Fasano New York carries your brand: "Cocktail by [Your Firm]" across invitations, signage, and all event communications.</div>
+      <div class="detail-desc" data-lang="pt">A recepção de encerramento no Fasano New York leva sua marca: "Cocktail by [Sua Empresa]" nos convites, sinalização e todas as comunicações do evento.</div>
     </div>
   </div>
 </section>
+
+<!-- ===== 07 STRATEGIC PARTNER ===== -->
+<section class="slide">
+  <div class="sn">06 — Strategic Partner · $7,000</div>
+  <div style="margin-bottom:0.5rem;"><span style="font-family:'JetBrains Mono',monospace;font-size:0.5rem;letter-spacing:0.1em;text-transform:uppercase;padding:0.25rem 0.6rem;border:1px solid var(--violet);color:var(--violet);border-radius:2px;"><span data-lang="en">3 positions available</span><span data-lang="pt">3 vagas disponíveis</span></span></div>
+  <h2 data-lang="en">Visible. Present.<br>Part of the conversation.</h2>
+  <h2 data-lang="pt">Visível. Presente.<br>Parte da conversa.</h2>
+  <p data-lang="en">The Strategic Partner gains meaningful access to the room — both as a participant and as a recognized brand in the forum's materials.</p>
+  <p data-lang="pt">O Strategic Partner ganha acesso relevante à sala — como participante e como marca reconhecida nos materiais do fórum.</p>
+  <div class="detail-grid cols-3">
+    <div class="detail-item">
+      <div class="detail-num">7</div>
+      <div class="detail-label"><span data-lang="en">Guest Invitations</span><span data-lang="pt">Convites</span></div>
+      <div class="detail-desc" data-lang="en">Invitations for your key stakeholders to both the NYU Schack program and Fasano cocktail.</div>
+      <div class="detail-desc" data-lang="pt">Convites para seus principais stakeholders para o programa no NYU Schack e cocktail no Fasano.</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-num" style="font-size:1.2rem;">Panel</div>
+      <div class="detail-label"><span data-lang="en">Panel Participation</span><span data-lang="pt">Participação em Painel</span></div>
+      <div class="detail-desc" data-lang="en">Participate as a panelist in one of the forum's sessions. Subject curated with the organizing committee.</div>
+      <div class="detail-desc" data-lang="pt">Participe como painelista em uma das sessões do fórum. Tema curado com o comitê organizador.</div>
+    </div>
+    <div></div>
+    <div class="detail-item">
+      <div class="detail-num" style="font-size:1.2rem;">Logo</div>
+      <div class="detail-label"><span data-lang="en">Brand Presence</span><span data-lang="pt">Presença de Marca</span></div>
+      <div class="detail-desc" data-lang="en">Logo on all event materials: invitations, program, badges, backdrop, and digital channels.</div>
+      <div class="detail-desc" data-lang="pt">Logo em todos os materiais do evento: convites, programa, crachás, backdrop e canais digitais.</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-num" style="font-size:1.2rem;">Directory</div>
+      <div class="detail-label"><span data-lang="en">Curated Attendee Directory</span><span data-lang="pt">Diretório Curado de Participantes</span></div>
+      <div class="detail-desc" data-lang="en">Access to the curated attendee directory — name, title, firm, and LinkedIn of every confirmed participant. Delivered after the event.</div>
+      <div class="detail-desc" data-lang="pt">Acesso ao diretório curado de participantes — nome, cargo, empresa e LinkedIn de cada participante confirmado. Entregue após o evento.</div>
+    </div>
+    <div></div>
+  </div>
+</section>
+
+<!-- ===== 08 SUPPORTING PARTNER ===== -->
+<section class="slide slide-light">
+  <div class="sn">07 — Supporting Partner · $3,000</div>
+  <div style="margin-bottom:0.5rem;"><span style="font-family:'JetBrains Mono',monospace;font-size:0.5rem;letter-spacing:0.1em;text-transform:uppercase;padding:0.25rem 0.6rem;border:1px solid var(--dgray);color:var(--dgray);border-radius:2px;"><span data-lang="en">4 positions available</span><span data-lang="pt">4 vagas disponíveis</span></span></div>
+  <h2 data-lang="en">In the room<br>where it happens.</h2>
+  <h2 data-lang="pt">Na sala<br>onde acontece.</h2>
+  <p data-lang="en">The Supporting Partner ensures a seat at the table — with branded visibility across the forum's communications.</p>
+  <p data-lang="pt">O Supporting Partner garante um lugar à mesa — com visibilidade de marca nas comunicações do fórum.</p>
+  <div class="detail-grid cols-3">
+    <div class="detail-item">
+      <div class="detail-num">3</div>
+      <div class="detail-label"><span data-lang="en">Guest Invitations</span><span data-lang="pt">Convites</span></div>
+      <div class="detail-desc" data-lang="en">Three direct invitations to the full-day program at NYU Schack and closing cocktail at Fasano New York.</div>
+      <div class="detail-desc" data-lang="pt">Três convites diretos para o programa completo no NYU Schack e cocktail de encerramento no Fasano New York.</div>
+    </div>
+    <div></div>
+    <div></div>
+    <div class="detail-item">
+      <div class="detail-num" style="font-size:1.2rem;">Logo</div>
+      <div class="detail-label"><span data-lang="en">Brand Presence</span><span data-lang="pt">Presença de Marca</span></div>
+      <div class="detail-desc" data-lang="en">Logo included on event materials and digital communications.</div>
+      <div class="detail-desc" data-lang="pt">Logo nos materiais do evento e comunicações digitais.</div>
+    </div>
+    <div></div>
+    <div></div>
+  </div>
+</section>
+
+<!-- ===== WHY THIS FORMAT ===== -->
+<section class="slide slide-deep">
+  <div class="sn" data-lang="en">Why This Format</div>
+  <div class="sn" data-lang="pt">Por Que Este Formato</div>
+  <h2 data-lang="en">Not another conference.<br>A curated room.</h2>
+  <h2 data-lang="pt">Não é mais uma conferência.<br>Uma sala curada.</h2>
+
+  <div class="detail-grid cols-3" style="margin-top:2rem;">
+    <div class="detail-item">
+      <div class="detail-num">01</div>
+      <div class="detail-label"><span data-lang="en">Intellectual Density</span><span data-lang="pt">Densidade Intelectual</span></div>
+      <div class="detail-desc" data-lang="en">80 seats. Invite-only. Every attendee is hand-selected: C-level executives, fund managers, developers, and institutional investors operating across Brazil and the United States. No filler, no spectators — only decision-makers who shape both markets.</div>
+      <div class="detail-desc" data-lang="pt">80 lugares. Apenas convidados. Cada participante é selecionado individualmente: C-levels, gestores de fundos, incorporadores e investidores institucionais que atuam entre Brasil e Estados Unidos. Sem figuração — apenas tomadores de decisão que moldam ambos os mercados.</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-num">02</div>
+      <div class="detail-label"><span data-lang="en">Inaugural Edition</span><span data-lang="pt">Edição Inaugural</span></div>
+      <div class="detail-desc" data-lang="en">This is the founding year of an annual platform. The Founding Partner position exists only in 2026 — it will not be offered again. Your firm's name becomes permanently linked to the origin of the forum, referenced in every future edition.</div>
+      <div class="detail-desc" data-lang="pt">Este é o ano inaugural de uma plataforma anual. A posição de Founding Partner existe apenas em 2026 — não será oferecida novamente. O nome da sua empresa fica permanentemente vinculado à origem do fórum, referenciado em todas as edições futuras.</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-num">03</div>
+      <div class="detail-label"><span data-lang="en">First-Mover Advantage</span><span data-lang="pt">Vantagem de Primeiro Movimento</span></div>
+      <div class="detail-desc" data-lang="en">Partnership values will increase in 2027 as the forum scales. Sponsors who join the inaugural edition lock in preferential pricing and priority renewal for future years. The cost of waiting is measurable.</div>
+      <div class="detail-desc" data-lang="pt">Os valores de parceria serão maiores em 2027 conforme o fórum escala. Patrocinadores da edição inaugural garantem preços preferenciais e prioridade de renovação para os próximos anos. O custo de esperar é mensurável.</div>
+    </div>
+  </div>
+
+  <div class="stats" style="margin-top:2.5rem;">
+    <div>
+      <div class="stat-num">80</div>
+      <div class="stat-label" data-lang="en">Invite-only seats</div>
+      <div class="stat-label" data-lang="pt">Lugares por convite</div>
+    </div>
+    <div>
+      <div class="stat-num">1:27</div>
+      <div class="stat-label" data-lang="en">Sponsor-to-attendee ratio</div>
+      <div class="stat-label" data-lang="pt">Proporção patrocinador-participante</div>
+    </div>
+    <div>
+      <div class="stat-num">Y1</div>
+      <div class="stat-label" data-lang="en">Founding year — one chance</div>
+      <div class="stat-label" data-lang="pt">Ano fundador — uma chance</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 09 BUDGET ===== -->
+<section class="slide slide-charcoal">
+  <div class="sn" data-lang="en">08 — Budget Transparency</div>
+  <div class="sn" data-lang="pt">08 — Transparência Orçamentária</div>
+  <h2 data-lang="en">Where the money goes.<br>All of it.</h2>
+  <h2 data-lang="pt">Para onde vai o dinheiro.<br>Todo ele.</h2>
+  <p data-lang="en">NYU Schack provides the venue at no cost. Instituto Cidades Responsivas organizes production, content, and logistics. Neither institution profits from this event. Every dollar of sponsorship goes directly to making it happen.</p>
+  <p data-lang="pt">O NYU Schack cede o espaço sem custo. O Instituto Cidades Responsivas organiza produção, conteúdo e logística. Nenhuma das instituições lucra com o evento. Cada dólar de patrocínio vai diretamente para viabilizá-lo.</p>
+
+  <div class="budget-grid">
+    <div class="budget-item"><span data-lang="en">Fasano NY — Closing Cocktail</span><span data-lang="pt">Fasano NY — Cocktail de Encerramento</span></div>
+    <div class="budget-val">$33,000</div>
+    <div class="budget-item"><span data-lang="en">NYU Schack — Catering & A/V</span><span data-lang="pt">NYU Schack — Catering & Audiovisual</span></div>
+    <div class="budget-val">$11,000</div>
+    <div class="budget-item"><span data-lang="en">Production & Materials</span><span data-lang="pt">Produção & Materiais</span></div>
+    <div class="budget-val">$3,500</div>
+    <div class="budget-item"><span data-lang="en">Communications & Design</span><span data-lang="pt">Comunicação & Design</span></div>
+    <div class="budget-val">$2,500</div>
+    <div class="budget-total budget-item">Total</div>
+    <div class="budget-total budget-val">$50,000</div>
+  </div>
+
+  <div class="budget-note" data-lang="en">
+    NYU Schack Institute of Real Estate — venue partner (no charge)<br>
+    Instituto Cidades Responsivas (Grupo OSPA) — organizing partner (no fee)<br>
+    Zero markup. Zero management fees. 100% allocated to the event.
+  </div>
+  <div class="budget-note" data-lang="pt">
+    NYU Schack Institute of Real Estate — parceiro de espaço (sem custo)<br>
+    Instituto Cidades Responsivas (Grupo OSPA) — parceiro organizador (sem fee)<br>
+    Zero markup. Zero taxa de gestão. 100% alocado no evento.
+  </div>
+
+  <div class="budget-note" style="margin-top:1.5rem;padding-top:1rem;border-top:1px solid rgba(87,6,140,0.15);">
+    <span data-lang="en"><strong>Note:</strong> A symbolic registration fee of $50 per attendee will be charged to ensure confirmed attendance and support event administration.</span>
+    <span data-lang="pt"><strong>Nota:</strong> Será cobrada uma taxa simbólica de US$ 50 por participante para garantir a presença confirmada e apoiar a administração do evento.</span>
+  </div>
+</section>
+
+<!-- ===== 10 CONTACT ===== -->
+<section class="slide slide-violet">
+  <div class="sn" data-lang="en">09 — Next Steps</div>
+  <div class="sn" data-lang="pt">09 — Próximos Passos</div>
+  <h2 data-lang="en">Let's build<br>this together.</h2>
+  <h2 data-lang="pt">Vamos construir<br>isso juntos.</h2>
+  <p data-lang="en">Partnership commitments are limited and allocated on a first-confirmed basis. We welcome a conversation about which tier best aligns with your firm's objectives.</p>
+  <p data-lang="pt">Os compromissos de parceria são limitados e alocados por ordem de confirmação. Teremos prazer em conversar sobre qual nível melhor se alinha aos objetivos da sua empresa.</p>
+  <div class="contact-block">
+    <div class="contact-label" data-lang="en">Contact</div>
+    <div class="contact-label" data-lang="pt">Contato</div>
+    <div class="contact-name">Rodrigo Rocha</div>
+    <div class="contact-email">rodrigo.rocha@ospa.com.br</div>
+    <div style="margin-top:1rem;font-family:'JetBrains Mono',monospace;font-size:0.55rem;letter-spacing:0.08em;color:rgba(255,255,255,0.4);">OSPA Capital · Instituto Cidades Responsivas · Grupo OSPA</div>
+  </div>
+</section>
+
+<div class="footer">
+  <p>BR/US Real Estate Forum · Partnership Deck · March 2026<br>Confidential · Instituto Cidades Responsivas + NYU Schack Institute of Real Estate</p>
+</div>
 
 <script>
 function setLang(lang) {
@@ -1393,7 +1203,6 @@ function setLang(lang) {
     btn.classList.toggle('active', btn.textContent.trim().toLowerCase() === lang);
   });
 }
-
 </script>
 
 <!-- (Isometric animation removed) -->
@@ -2106,649 +1915,6 @@ function setLang(lang) {
   window.addEventListener('resize', function(){ h = window.innerHeight; }, {passive:true});
   updateCover();
 })();
-
-// ===== 3D MAP — ZOOM-IN ORBIT AT EACH VENUE =====
-(function(){
-  var mapContainer = document.getElementById('mapbox-map');
-  if(!mapContainer) return;
-  if(typeof mapboxgl === 'undefined'){ console.error('Mapbox GL JS failed to load'); return; }
-
-  mapboxgl.accessToken = 'pk.eyJ1Ijoicm9kcmlnby1yb2NoYSIsImEiOiJjazZpMHQ0aGcwOHluM25udzNuOTg5dG1mIn0.BxgX-SXrKvAzFFr2Ufhl5A';
-
-  // === Venues ===
-  var MANHATTAN = [-73.9900, 40.7300];  // South Manhattan — tip visible, just top edge of Central Park
-  var WAGNER = [-73.9882, 40.7367];  // NYU Wagner, 105 E 17th St
-  var KIMMEL = [-73.9987, 40.7291];
-  var FASANO = [-73.9735, 40.7557];
-  var MIDTOWN_HOTELS = [-73.9740, 40.7615]; // Center of hotel cluster
-
-  // === Camera keyframes — each is a scroll phase ===
-  // Starts 2D flat, north up. Gentle zoom into each venue.
-  var OVERVIEW_ZOOM = 12.5;    // tighter — tip of island to top edge of Central Park
-  var CLOSE_ZOOM = 15.2;       // above 15.05 threshold for real building heights
-  var CLOSE_PITCH = 45;        // moderate tilt
-
-  // POI zoom level — slightly closer than overview to see all dots
-  var POI_ZOOM = 12.2;
-
-  var phases = [
-    // 0-8%: Manhattan 2D overview — flat, north up, hold
-    { t0: 0,    t1: 0.08, from: { center: MANHATTAN, zoom: OVERVIEW_ZOOM, pitch: 0, bearing: 0 },
-                           to:   { center: MANHATTAN, zoom: OVERVIEW_ZOOM, pitch: 0, bearing: 0 },
-      marker: null, card: null },
-    // 8-20%: gentle zoom into Union Square
-    { t0: 0.08, t1: 0.20, from: { center: MANHATTAN, zoom: OVERVIEW_ZOOM, pitch: 0,          bearing: 0 },
-                           to:   { center: WAGNER,     zoom: CLOSE_ZOOM,    pitch: CLOSE_PITCH, bearing: 0 },
-      marker: 'union', card: 'card-union' },
-    // 20-30%: slow orbit Union Square
-    { t0: 0.20, t1: 0.30, from: { center: WAGNER, zoom: CLOSE_ZOOM, pitch: CLOSE_PITCH, bearing: 0 },
-                           to:   { center: WAGNER, zoom: CLOSE_ZOOM, pitch: CLOSE_PITCH, bearing: 80 },
-      marker: 'union', card: 'card-union' },
-    // 30-38%: gentle zoom out
-    { t0: 0.30, t1: 0.38, from: { center: WAGNER,     zoom: CLOSE_ZOOM,    pitch: CLOSE_PITCH, bearing: 80 },
-                           to:   { center: MANHATTAN, zoom: OVERVIEW_ZOOM, pitch: 0,           bearing: 0 },
-      marker: null, card: null },
-    // 38-50%: gentle zoom into Kimmel
-    { t0: 0.38, t1: 0.50, from: { center: MANHATTAN, zoom: OVERVIEW_ZOOM, pitch: 0,           bearing: 0 },
-                           to:   { center: KIMMEL,    zoom: CLOSE_ZOOM,    pitch: CLOSE_PITCH, bearing: 20 },
-      marker: 'kimmel', card: 'card-kimmel' },
-    // 50-58%: slow orbit Kimmel
-    { t0: 0.50, t1: 0.58, from: { center: KIMMEL, zoom: CLOSE_ZOOM, pitch: CLOSE_PITCH, bearing: 20 },
-                           to:   { center: KIMMEL, zoom: CLOSE_ZOOM, pitch: CLOSE_PITCH, bearing: 100 },
-      marker: 'kimmel', card: 'card-kimmel' },
-    // 58-66%: gentle zoom out
-    { t0: 0.58, t1: 0.66, from: { center: KIMMEL,    zoom: CLOSE_ZOOM,    pitch: CLOSE_PITCH, bearing: 100 },
-                           to:   { center: MANHATTAN, zoom: OVERVIEW_ZOOM, pitch: 0,           bearing: 0 },
-      marker: null, card: null },
-    // 66-76%: gentle zoom into Fasano
-    { t0: 0.66, t1: 0.76, from: { center: MANHATTAN, zoom: OVERVIEW_ZOOM, pitch: 0,           bearing: 0 },
-                           to:   { center: FASANO,    zoom: CLOSE_ZOOM,    pitch: CLOSE_PITCH, bearing: -20 },
-      marker: 'fasano', card: 'card-fasano' },
-    // 76-82%: slow orbit Fasano
-    { t0: 0.76, t1: 0.82, from: { center: FASANO, zoom: CLOSE_ZOOM, pitch: CLOSE_PITCH, bearing: -20 },
-                           to:   { center: FASANO, zoom: CLOSE_ZOOM, pitch: CLOSE_PITCH, bearing: 60 },
-      marker: 'fasano', card: 'card-fasano' },
-    // 82-88%: zoom out to POI overview
-    { t0: 0.82, t1: 0.88, from: { center: FASANO,    zoom: CLOSE_ZOOM,    pitch: CLOSE_PITCH, bearing: 60 },
-                           to:   { center: MANHATTAN, zoom: POI_ZOOM, pitch: 0,           bearing: 0 },
-      marker: null, card: null },
-    // 88-93%: hold at POI overview — grey dots appear progressively
-    { t0: 0.88, t1: 0.93, from: { center: MANHATTAN, zoom: POI_ZOOM, pitch: 0, bearing: 0 },
-                           to:   { center: MANHATTAN, zoom: POI_ZOOM, pitch: 0, bearing: 0 },
-      marker: null, card: null, poiPhase: true },
-    // 93-96%: zoom into Midtown hotel cluster
-    { t0: 0.93, t1: 0.96, from: { center: MANHATTAN, zoom: POI_ZOOM, pitch: 0, bearing: 0 },
-                           to:   { center: MIDTOWN_HOTELS, zoom: 14.2, pitch: 30, bearing: 0 },
-      marker: null, card: null, hotelPhase: true },
-    // 96-100%: hold at hotel cluster
-    { t0: 0.96, t1: 1.0,  from: { center: MIDTOWN_HOTELS, zoom: 14.2, pitch: 30, bearing: 0 },
-                           to:   { center: MIDTOWN_HOTELS, zoom: 14.2, pitch: 30, bearing: 0 },
-      marker: null, card: null, hotelPhase: true }
-  ];
-
-  // Smooth cubic easing — gentler acceleration/deceleration
-  function ease(t){ return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2, 3)/2; }
-
-  // Interpolate between two camera states
-  function lerp(a, b, t){
-    var e = ease(t);
-    return {
-      center: [a.center[0] + (b.center[0]-a.center[0])*e, a.center[1] + (b.center[1]-a.center[1])*e],
-      zoom:    a.zoom    + (b.zoom   -a.zoom)   *e,
-      pitch:   a.pitch   + (b.pitch  -a.pitch)  *e,
-      bearing: a.bearing + (b.bearing-a.bearing) *e
-    };
-  }
-
-  var map = new mapboxgl.Map({
-    container: 'mapbox-map',
-    style: 'mapbox://styles/mapbox/light-v11',
-    center: MANHATTAN,
-    zoom: 12.5,
-    pitch: 0,
-    bearing: 0,
-    antialias: true,
-    interactive: false,
-    attributionControl: false
-  });
-
-  map.on('load', function(){
-
-    // — Remove labels —
-    var layers = map.getStyle().layers;
-    for(var i = layers.length - 1; i >= 0; i--){
-      if(layers[i].type === 'symbol') map.removeLayer(layers[i].id);
-    }
-
-    // — 3D buildings — simple paint, no feature-state
-    map.addLayer({
-      id: '3d-buildings',
-      source: 'composite',
-      'source-layer': 'building',
-      filter: ['==', 'extrude', 'true'],
-      type: 'fill-extrusion',
-      minzoom: 14,
-      paint: {
-        'fill-extrusion-color': '#eeeef2',
-        'fill-extrusion-height': ['interpolate', ['linear'], ['zoom'], 14, 0, 15.05, ['get', 'height']],
-        'fill-extrusion-base': ['interpolate', ['linear'], ['zoom'], 14, 0, 15.05, ['get', 'min_height']],
-        'fill-extrusion-opacity': 0.55
-      }
-    });
-
-    // — Route paths (Wagner→Kimmel, Kimmel→Fasano) —
-    var ROUTE_1 = [
-      [-73.988076,40.736868],[-73.988582,40.737081],[-73.98898,40.736541],[-73.989065,40.736572],[-73.990079,40.735228],[-73.990652,40.734863],[-73.990789,40.734923],[-73.990899,40.734747],[-73.991693,40.73507],[-73.992751,40.733844],[-73.992922,40.7339],[-73.995691,40.730703],[-73.996885,40.730543],[-73.997168,40.730633],[-73.997397,40.730539],[-73.997658,40.730583],[-73.998021,40.730356],[-73.997979,40.730304],[-73.998933,40.729214]
-    ];
-    var ROUTE_2 = [
-      [-73.998933,40.729214],[-73.996936,40.731477],[-73.989146,40.742163],[-73.988513,40.742771],[-73.986639,40.742715],[-73.979213,40.752909],[-73.978725,40.753381],[-73.977803,40.753088],[-73.976467,40.754893],[-73.975981,40.754687],[-73.97503,40.755914],[-73.97366,40.755484]
-    ];
-
-    map.addSource('route-1', {
-      type: 'geojson',
-      data: { type: 'Feature', geometry: { type: 'LineString', coordinates: [] } }
-    });
-    map.addSource('route-2', {
-      type: 'geojson',
-      data: { type: 'Feature', geometry: { type: 'LineString', coordinates: [] } }
-    });
-    map.addLayer({
-      id: 'route-1-line',
-      type: 'line',
-      source: 'route-1',
-      paint: {
-        'line-color': '#8900e1',
-        'line-width': 2.5,
-        'line-opacity': 0.7,
-        'line-dasharray': [2, 2]
-      }
-    });
-    map.addLayer({
-      id: 'route-2-line',
-      type: 'line',
-      source: 'route-2',
-      paint: {
-        'line-color': '#8900e1',
-        'line-width': 2.5,
-        'line-opacity': 0.7,
-        'line-dasharray': [2, 2]
-      }
-    });
-
-    // — Neighborhood boundaries (official NYC NTA data, fetched at runtime) —
-    var nhLoaded = false;
-    var nhVisible = false;
-
-    // Empty sources — will be populated once data loads
-    map.addSource('nh-fills', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
-    map.addSource('nh-labels', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
-
-    map.addLayer({
-      id: 'nh-fills-layer',
-      type: 'fill',
-      source: 'nh-fills',
-      paint: { 'fill-color': 'rgba(0,0,0,0)', 'fill-outline-color': '#c0c0c0', 'fill-opacity': 0 }
-    });
-    map.addLayer({
-      id: 'nh-labels-layer',
-      type: 'symbol',
-      source: 'nh-labels',
-      layout: {
-        'text-field': ['get', 'name'],
-        'text-font': ['DIN Pro Medium', 'Arial Unicode MS Regular'],
-        'text-size': 10,
-        'text-transform': 'uppercase',
-        'text-letter-spacing': 0.12
-      },
-      paint: { 'text-color': '#aaa', 'text-opacity': 0, 'text-halo-color': '#fff', 'text-halo-width': 1.5 }
-    });
-
-    // Fetch official NYC Neighborhood Tabulation Areas (Manhattan only)
-    function loadNeighborhoods(){
-      if(nhLoaded) return;
-      nhLoaded = true;
-      var url = 'https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/arcgis/rest/services/NYC_Neighborhood_Tabulation_Areas_2020/FeatureServer/0/query?where=BoroCode%3D1&outFields=NTAName&f=geojson&outSR=4326';
-      fetch(url).then(function(r){ return r.json(); }).then(function(data){
-        var skip = ['Central Park','Highbridge Park','Inwood Hill Park','Randall\'s Island',
-                    'The Battery-Governors Island-Ellis Island-Liberty Island','United Nations',
-                    'Stuyvesant Town-Peter Cooper Village'];
-        var feats = data.features.filter(function(f){ return skip.indexOf(f.properties.NTAName) === -1; });
-
-        // Keep original polygon geometry (avoids double-line on shared edges)
-        var polyFeats = [];
-        var labelFeats = [];
-        feats.forEach(function(f){
-          polyFeats.push({type:'Feature',geometry:f.geometry,properties:{}});
-          // Centroid for label
-          var all = f.geometry.type==='MultiPolygon' ? f.geometry.coordinates.flat(2) : f.geometry.coordinates.flat(1);
-          var cx = all.reduce(function(s,c){return s+c[0];},0)/all.length;
-          var cy = all.reduce(function(s,c){return s+c[1];},0)/all.length;
-          var nm = f.properties.NTAName.split('-')[0].trim();
-          labelFeats.push({type:'Feature',geometry:{type:'Point',coordinates:[cx,cy]},properties:{name:nm}});
-        });
-
-        map.getSource('nh-fills').setData({type:'FeatureCollection',features:polyFeats});
-        map.getSource('nh-labels').setData({type:'FeatureCollection',features:labelFeats});
-      }).catch(function(e){ console.warn('Neighborhood data unavailable:', e); });
-    }
-
-    function updateNeighborhoods(show){
-      if(show && !nhLoaded) loadNeighborhoods();
-      if(show === nhVisible) return;
-      nhVisible = show;
-      map.setPaintProperty('nh-fills-layer', 'fill-opacity', show ? 1 : 0);
-      map.setPaintProperty('nh-labels-layer', 'text-opacity', show ? 0.65 : 0);
-    }
-
-    var route1Drawn = false;
-    var route2Drawn = false;
-
-    function drawRoute(sourceId, fullCoords, progress){
-      // progress 0→1: gradually reveal the line from start to end
-      if(progress <= 0){
-        map.getSource(sourceId).setData({ type: 'Feature', geometry: { type: 'LineString', coordinates: [] } });
-        return;
-      }
-      var totalPts = fullCoords.length;
-      // interpolate along the polyline
-      var exactIdx = progress * (totalPts - 1);
-      var baseIdx = Math.floor(exactIdx);
-      var frac = exactIdx - baseIdx;
-      var coords = fullCoords.slice(0, baseIdx + 1);
-      // add interpolated point at the tip
-      if(baseIdx < totalPts - 1){
-        var a = fullCoords[baseIdx];
-        var b = fullCoords[baseIdx + 1];
-        coords.push([a[0] + (b[0]-a[0])*frac, a[1] + (b[1]-a[1])*frac]);
-      }
-      if(coords.length >= 2){
-        map.getSource(sourceId).setData({ type: 'Feature', geometry: { type: 'LineString', coordinates: coords } });
-      }
-    }
-
-    // — Markers — simple purple dots, hidden until revealed
-    function makeMarkerEl(){
-      var el = document.createElement('div');
-      el.style.cssText = 'width:12px;height:12px;background:#8900e1;border:2px solid #fff;border-radius:50%;display:none;';
-      return el;
-    }
-
-    var markers = {
-      union:  { el: makeMarkerEl(), revealed: false },
-      kimmel: { el: makeMarkerEl(), revealed: false },
-      fasano: { el: makeMarkerEl(), revealed: false }
-    };
-    new mapboxgl.Marker({element: markers.union.el}).setLngLat(WAGNER).addTo(map);
-    new mapboxgl.Marker({element: markers.kimmel.el}).setLngLat(KIMMEL).addTo(map);
-    new mapboxgl.Marker({element: markers.fasano.el}).setLngLat(FASANO).addTo(map);
-
-    // Once revealed, a marker stays visible forever
-    function revealMarker(key){
-      var m = markers[key];
-      if(!m || m.revealed) return;
-      m.revealed = true;
-      m.el.style.display = 'block';
-    }
-
-    // — Cards —
-    var cards = {
-      'card-union':  document.getElementById('card-union'),
-      'card-kimmel': document.getElementById('card-kimmel'),
-      'card-fasano': document.getElementById('card-fasano')
-    };
-    function showCard(id){ var el = cards[id]; if(el && !el.classList.contains('visible')) el.classList.add('visible'); }
-    function hideCard(id){ var el = cards[id]; if(el && el.classList.contains('visible')) el.classList.remove('visible'); }
-
-    // — POI (Points of Interest) — grey dots with click-to-open cards
-    var POI_DATA = [
-      { id: 'poi-1',  name: 'Hudson Yards', dev: 'Related Companies + Oxford Properties', loc: 'Far West Side, 34th St', coords: [-74.0005, 40.7536], desc: 'O maior desenvolvimento privado da história dos EUA — 28 acres construídos sobre trilhos ativos do LIRR. ~$32B de investimento, 11,9M SF entregues na Fase 1. Financiado via TIF bonds e EB-5. Analogia direta com CEPACs e Operações Urbanas.' },
-      { id: 'poi-2',  name: 'The Shed', dev: 'Diller Scofidio + Renfro', loc: 'Hudson Yards, 30th St', coords: [-74.0017, 40.7533], desc: 'Centro cultural de $475M com estrutura telescópica móvel sobre rodas — dobra sua área em 5 minutos. PPP onde o espaço público foi condição do zoneamento privado. Mesmo escritório projetou o MIS do Rio.' },
-      { id: 'poi-3',  name: 'The High Line', dev: 'Friends of the High Line / Cidade de NY', loc: 'Gansevoort St a 34th St', coords: [-74.0049, 40.7480], desc: 'Ferrovia elevada abandonada transformada em parque linear de 2,3 km. Investimento público de ~$130M gerou $1,4B em receita incremental de impostos. Modelo de gestão por conservancy privada — sem custo ao orçamento público.' },
-      { id: 'poi-4',  name: 'Little Island', dev: 'Fundação Diller-von Furstenberg / Heatherwick Studio', loc: 'Pier 55, Hudson River, 13th St', coords: [-74.0107, 40.7421], desc: 'Parque flutuante de 2,4 acres sobre 132 pilares únicos de concreto. $260M inteiramente privados. Modelo de filantropia urbana com manutenção custeada pelo doador por 20 anos.' },
-      { id: 'poi-5',  name: 'One Vanderbilt', dev: 'SL Green Realty (60%) + Mori Building (11%)', loc: 'Midtown East, adj. Grand Central', coords: [-73.9787, 40.7530], desc: 'Supertall de 1.401 pés e 1,7M SF, 100% locado a ~$322/SF. Developer investiu $220M em melhorias de infraestrutura de trânsito para obter bônus de densidade — modelo direto de Outorga Onerosa. Avaliado em $4,7B em 2024.' },
-      { id: 'poi-6',  name: '550 Madison Avenue', dev: 'The Olayan Group', loc: 'Midtown East, 55th–56th St', coords: [-73.9731, 40.7617], desc: 'Retrofit de $300M do ex-edifício AT&T de Philip Johnson. Único edifício do Plaza District com LEED Platinum + WELL Gold. Jardim público de meio acre aberto à rua. Modelo de reposicionamento de torres corporativas dos anos 80.' },
-      { id: 'poi-7',  name: 'Manhattan West', dev: 'Brookfield Properties + Qatar Investment Authority (44%)', loc: 'Penn Station area, 9th Ave', coords: [-73.9943, 40.7530], desc: '7M SF construídos sobre trilhos ativos — plataforma de $680M. Parceria com fundo soberano do Qatar. Conectado à High Line e à Moynihan Train Hall pelo High Line Connector, entregue em 2025.' },
-      { id: 'poi-8',  name: 'Moynihan Train Hall', dev: 'Empire State Development + Related + Vornado', loc: 'Penn Station area, 8th Ave e 33rd St', coords: [-73.9933, 40.7505], desc: 'Conversão de $1,6B da histórica Farley Post Office (1913) em terminal ferroviário moderno com claraboia de 92 pés. Entregue no prazo durante a pandemia. Referência para requalificação de estações ferroviárias históricas no Brasil.' },
-      { id: 'poi-9',  name: '270 Park Avenue — JPMorgan HQ', dev: 'JPMorgan Chase / Foster + Partners', loc: 'Midtown East, Park Ave 47th–48th', coords: [-73.9756, 40.7560], desc: 'Inaugurado em outubro de 2025. 60 andares, 2,5M SF, $4B de investimento. Maior edifício 100% elétrico de NYC, net-zero operacional. Demoliu o edifício anterior voluntariamente — o mais alto já demolido na história dos EUA.' },
-      { id: 'poi-10', name: 'Essex Crossing', dev: 'L+M + BFC Partners + Taconic + Goldman Sachs', loc: 'Lower East Side, Delancey St', coords: [-73.9875, 40.7184], desc: '6 acres, 9 quarteirões, $1,5B. 51% das 1.079 unidades permanentemente acessíveis. Terreno público ocioso por 50 anos após remoção forçada em 1967. Financiamento via LIHTC + NMTC empilhados. Prêmio ULI Global de Excelência 2022.' },
-      { id: 'poi-11', name: 'Brookfield Place + Battery Park City', dev: 'Brookfield Properties / BPCA', loc: 'Downtown, West Street', coords: [-74.0155, 40.7128], desc: '92 acres em ground leases perpétuos sob autoridade pública estadual (BPCA). Receitas de aluguel de solo cruzam-subsidiam habitação acessível em toda a cidade. Extensão de lease de 2025 vai gerar $1,5B para housing.' },
-      { id: 'poi-12', name: 'World Trade Center', dev: 'Port Authority + Silverstein + Brookfield', loc: 'Downtown, Liberty St', coords: [-74.0133, 40.7116], desc: '16 acres, $20B+ de investimento combinado. Regeneração urbana pós-catástrofe ao longo de 20+ anos. One WTC (SOM), Oculus (Calatrava, $3,9B), Perelman PAC (REX). O 2 WTC começa construção em 2026.' },
-      { id: 'poi-13', name: 'Domino Park / The Refinery', dev: 'Two Trees Management', loc: 'Williamsburg, Brooklyn', coords: [-73.9683, 40.7137], desc: '$2,5B de reconversão de refinaria de açúcar histórica em 11 acres. 2.800 apartamentos (25% acessíveis), 600K SF de escritórios. Parque inaugurado antes dos edifícios — tática deliberada de construção de capital político.' },
-      { id: 'poi-14', name: 'Sugar Hill', dev: 'Broadway Housing Communities / David Adjaye', loc: 'Washington Heights, 155th St', coords: [-73.9402, 40.8332], desc: '191K SF, 124 apartamentos 100% acessíveis + museu infantil. Arquitetura de alto padrão para habitação popular — painéis de concreto pré-moldado grafite em relevo. Questionamento direto ao padrão construtivo do MCMV.' },
-      { id: 'poi-15', name: 'Industry City', dev: 'Belvedere Capital + Jamestown + Angelo Gordon', loc: 'Sunset Park, Brooklyn', coords: [-74.0054, 40.6563], desc: '6M SF em 16 galpões industriais dos anos 1890, sem subsídio público. $450M+ investidos. 650+ empresas, 8.500 trabalhadores. Rezoneamento rejeitado em 2020 por pressão comunitária — caso de estudo em risco político de requalificação.' },
-      { id: 'poi-16', name: 'VIA 57 West', dev: 'Durst Organization / BIG – Bjarke Ingels Group', loc: 'West 57th St, Hell\'s Kitchen', coords: [-73.9944, 40.7688], desc: 'O "courtscraper" — híbrido entre torre europeia e pátio de Copenhagen. 709 unidades, 32 andares em forma piramidal que abre um pátio interno de 22.000 SF voltado ao rio. Primeiro projeto de Bjarke Ingels em NYC, 2016. Modelo de como densidade e qualidade de vida não são opostos.' },
-      { id: 'poi-17', name: 'Columbus Circle — The Shops & Time Warner Center', dev: 'Related Companies + Apollo Global (The Shops) / ADIA', loc: 'Columbus Circle, 59th St & Broadway', coords: [-73.9819, 40.7681], desc: 'Duas torres de 750 pés sobre um mall de luxo subterrâneo, inauguradas em 2003. $1,7B de investimento original. A primeira PPP que transformou um rotatória viária em destination urbana. Time Warner Center vendido por $3,3B em 2014 ao fundo soberano de Abu Dhabi — um dos maiores negócios imobiliários de NYC.' },
-      { id: 'poi-18', name: '432 Park Avenue', dev: 'CIM Group + Macklowe Properties / Rafael Viñoly', loc: 'Midtown East, 56th St & Park Ave', coords: [-73.9714, 40.7615], desc: 'Supertall residencial de 1.396 pés — o mais alto do hemisfério ocidental quando inaugurado em 2015. 104 unidades, penthouse vendida por $87,7M. Estrutura minimalista de concreto com janelas de 10×10 pés. Construído no terreno do antigo Drake Hotel. Símbolo do boom de supertalls de Billionaires\' Row.' },
-      { id: 'poi-19', name: '2 World Trade Center', dev: 'Silverstein Properties / BIG – Bjarke Ingels Group', loc: 'Downtown, Greenwich St', coords: [-74.0131, 40.7109], desc: 'Última torre do WTC complex — 1.340 pés, 2,8M SF. Construção começa em 2026. Passou por 3 arquitetos em 20 anos (Foster, Rogers, BIG) — reflexo direto de como ciclos de mercado e mudanças de anchor tenants afetam mega-projetos. Design final: 7 volumes empilhados em cascata.' },
-      { id: 'poi-20', name: 'PENN 2 + Penn Station Redevelopment', dev: 'Vornado Realty Trust', loc: 'Penn Station area, 7th Ave & 31st St', coords: [-73.9916, 40.7499], desc: '$3,5B de renovação da área mais degradada de Midtown. PENN 2: demolição da fachada e reconstrução como torre de vidro de 1.795 pés. Mega PPP com Estado de NY envolvendo direitos aéreos, subsídio de $1,2B via PILOT e transferência de FAR. O projeto mais controverso de NYC — aprovação condicionada a reforma da Penn Station.' },
-      { id: 'poi-21', name: 'The Spiral (66 Hudson Blvd)', dev: 'Tishman Speyer / BIG – Bjarke Ingels Group', loc: 'Hudson Yards, 10th Ave & 34th St', coords: [-74.0003, 40.7545], desc: 'Torre de escritórios de 1.041 pés com terraços em cascata em espiral — cada andar recua e gira, criando 70.000 SF de área verde ao ar livre distribuída na fachada. Inaugurada 2023. Sede da Pfizer. $3,7B. Modelo de amenidade vertical como diferencial de locação.' },
-      { id: 'poi-22', name: 'One Manhattan Square', dev: 'Extell Development / Adamson Associates', loc: 'Lower East Side, Cherry St', coords: [-73.9871, 40.7108], desc: 'Torre residencial de luxo de 815 pés e 815 unidades no Lower East Side — bairro historicamente operário. Piscina, spa, quadra de basquete, boliche, simulador de golfe. 25% das unidades acessíveis via Mandatory Inclusionary Housing. Caso de estudo em gentrificação vertical e tensão entre mercado de luxo e zoneamento inclusionary.' },
-      { id: 'poi-23', name: 'Steinway Tower (111 W 57th St)', dev: 'JDS Development + Property Markets Group / SHoP Architects', loc: 'Billionaires\' Row, 57th St', coords: [-73.9778, 40.7645], desc: 'O edifício mais fino do mundo — ratio largura:altura de 1:24. 1.428 pés, 84 andares, apenas 60 unidades. Fachada em terracota e bronze integrada ao histórico Steinway Hall (1925). Penthouse listada a $66M. Engenharia estrutural extrema: amortecedor de massa de 800 toneladas no topo para controle de oscilação.' },
-      { id: 'poi-24', name: 'Brooklyn Navy Yard', dev: 'Brooklyn Navy Yard Development Corporation (BNYDC)', loc: 'Brooklyn, Flushing Ave', coords: [-73.9712, 40.7023], desc: '300 acres de campus industrial/tech reconvertido de estaleiro militar. Sem residential — 100% produtivo. WeWork, Steiner Studios, novo manufacturing hub, Building 77 (1M SF de food manufacturing). 11.000 empregos. Modelo de economic development que rejeita a fórmula residential-led de reconversão.' },
-      { id: 'poi-25', name: 'Sunnyside Yard', dev: 'City of New York / Amtrak (proprietário)', loc: 'Sunnyside, Queens', coords: [-73.9202, 40.7428], desc: '180 acres sobre trilhos ativos do Amtrak — o maior terreno não desenvolvido de NYC. Master plan em andamento: potencial para 24.000 unidades + 19M SF de escritórios. Estimativa de $29B+ de investimento. Plataforma sobre trilhos como Hudson Yards mas 7x maior. O próximo mega-projeto de NYC — e o mais complexo.' }
-    ];
-
-    // Create POI markers (all hidden initially via CSS opacity)
-    var poiMarkers = [];
-    var poisVisible = false;
-    var poiPopup = document.getElementById('poi-popup');
-    var poiPopupName = document.getElementById('poi-popup-name');
-    var poiPopupDev = document.getElementById('poi-popup-dev');
-    var poiPopupLoc = document.getElementById('poi-popup-loc');
-    var poiPopupDesc = document.getElementById('poi-popup-desc');
-    var poiPopupClose = document.getElementById('poi-popup-close');
-
-    POI_DATA.forEach(function(poi){
-      var el = document.createElement('div');
-      el.className = 'poi-dot';
-      el.title = poi.name;
-      var m = new mapboxgl.Marker({element: el}).setLngLat(poi.coords).addTo(map);
-      poiMarkers.push({ el: el, data: poi, marker: m });
-
-      el.addEventListener('click', function(e){
-        e.stopPropagation();
-        poiPopupName.textContent = poi.name;
-        poiPopupDev.textContent = poi.dev;
-        poiPopupLoc.textContent = poi.loc;
-        poiPopupDesc.textContent = poi.desc;
-        poiPopup.classList.add('visible');
-      });
-    });
-
-    poiPopupClose.addEventListener('click', function(){
-      poiPopup.classList.remove('visible');
-    });
-
-    // Show all POI dots at once (fade via CSS transition)
-    function updatePOIs(show){
-      if(show === poisVisible) return;
-      poisVisible = show;
-      poiMarkers.forEach(function(p){
-        if(show) p.el.classList.add('visible');
-        else p.el.classList.remove('visible');
-      });
-    }
-
-    // — Hotel markers (numbered) —
-    var HOTEL_DATA = [
-      { num: 1, name: 'Fasano Fifth Avenue', stars: '★★★★★', price: '$$$$', addr: '815 Fifth Ave, Upper East Side',
-        descEn: 'The hotel of the event\'s cocktail. Exclusive boutique with membership, facing Central Park. The only Brazilian hotel brand in New York.',
-        descPt: 'O hotel do cocktail do evento. Boutique exclusivo com membership, frente ao Central Park. A unica marca hoteleira brasileira em Nova York.',
-        coords: [-73.9710, 40.7664], url: 'https://fasano.com.br/hoteis/fasano-new-york/' },
-      { num: 2, name: 'Baccarat Hotel New York', stars: '★★★★★', price: '$$$$', addr: '28 W 53rd St, Midtown',
-        descEn: 'Ultra-luxury with Parisian finish and Baccarat crystals. Across from MoMA, 4 minutes on foot from Fasano.',
-        descPt: 'Ultra-luxo com acabamento parisiense e cristais Baccarat. Defronte ao MoMA, a 4 minutos a pe do Fasano.',
-        coords: [-73.9774, 40.7609], url: 'https://www.baccarathotels.com/new-york' },
-      { num: 3, name: 'The Whitby Hotel', stars: '★★★★', price: '$$$', addr: '18 W 56th St, Midtown',
-        descEn: 'Firmdale Hotels boutique. Eclectic personalized design, bar and private cinema. 2 blocks from Fasano.',
-        descPt: 'Boutique da Firmdale Hotels. Design ecletico e personalizado, bar e cinema privativo. 2 quarteiroes do Fasano.',
-        coords: [-73.9757, 40.7627], url: 'https://www.firmdalehotels.com/hotels/new-york/the-whitby-hotel/' },
-      { num: 4, name: 'InterContinental New York Barclay', stars: '★★★★', price: '$$', addr: '111 E 48th St, Midtown East',
-        descEn: '1926 classic, 5 minutes on foot from NYU Schack. The most practical option for those arriving straight from the airport.',
-        descPt: 'Classico de 1926 a 5 minutos a pe do NYU Schack. A opcao mais pratica para quem chega direto do aeroporto.',
-        coords: [-73.9735, 40.7557], url: 'https://www.ihg.com/intercontinental/hotels/us/en/new-york/nycha/hoteldetail' }
-    ];
-
-    var hotelMarkers = [];
-    var hotelsVisible = false;
-    var hotelInfoCard = document.getElementById('hotel-info-card');
-    var hotelInfoName = document.getElementById('hotel-info-name');
-    var hotelInfoStars = document.getElementById('hotel-info-stars');
-    var hotelInfoPrice = document.getElementById('hotel-info-price');
-    var hotelInfoAddr = document.getElementById('hotel-info-addr');
-    var hotelInfoDesc = document.getElementById('hotel-info-desc');
-    var hotelInfoBook = document.getElementById('hotel-info-book');
-    var hotelInfoBookPt = document.getElementById('hotel-info-book-pt');
-    var hotelInfoClose = document.getElementById('hotel-info-close');
-
-    HOTEL_DATA.forEach(function(h){
-      var el = document.createElement('div');
-      el.className = 'hotel-dot';
-      el.textContent = h.num;
-      el.title = h.name;
-      var m = new mapboxgl.Marker({element: el}).setLngLat(h.coords).addTo(map);
-      hotelMarkers.push({ el: el, data: h, marker: m });
-
-      el.addEventListener('click', function(e){
-        e.stopPropagation();
-        hotelInfoName.textContent = h.name;
-        hotelInfoStars.textContent = h.stars;
-        hotelInfoPrice.textContent = h.price;
-        hotelInfoAddr.textContent = h.addr;
-        var isPt = document.body.className === 'pt';
-        hotelInfoDesc.textContent = isPt ? h.descPt : h.descEn;
-        hotelInfoBook.href = h.url;
-        hotelInfoBookPt.href = h.url;
-        hotelInfoCard.classList.add('visible');
-        showWalkRadius(h.num);
-      });
-    });
-
-    hotelInfoClose.addEventListener('click', function(){
-      hotelInfoCard.classList.remove('visible');
-      hideWalkRadius();
-    });
-
-    // — Walking radius circles (800m) for each hotel —
-    function makeCircle(center, radiusMeters, steps){
-      var coords = [];
-      var earthRadius = 6371000;
-      for(var i = 0; i <= steps; i++){
-        var angle = (i / steps) * Math.PI * 2;
-        var dlat = (radiusMeters / earthRadius) * Math.cos(angle) * (180 / Math.PI);
-        var dlng = (radiusMeters / earthRadius) * Math.sin(angle) * (180 / Math.PI) / Math.cos(center[1] * Math.PI / 180);
-        coords.push([center[0] + dlng, center[1] + dlat]);
-      }
-      return coords;
-    }
-
-    var walkCircles = [];
-    var walkLabels = [];
-    HOTEL_DATA.forEach(function(h){
-      var circle = makeCircle(h.coords, 800, 64);
-      walkCircles.push({ type: 'Feature', geometry: { type: 'Polygon', coordinates: [circle] }, properties: { num: h.num } });
-      var earthRadius = 6371000;
-      var dlng = (800 / earthRadius) * (180 / Math.PI) / Math.cos(h.coords[1] * Math.PI / 180);
-      walkLabels.push({ type: 'Feature', geometry: { type: 'Point', coordinates: [h.coords[0] + dlng, h.coords[1]] }, properties: { label: '~5 min walk', num: h.num } });
-    });
-
-    map.addSource('hotel-walk-circles', {
-      type: 'geojson',
-      data: { type: 'FeatureCollection', features: walkCircles }
-    });
-    map.addSource('hotel-walk-labels', {
-      type: 'geojson',
-      data: { type: 'FeatureCollection', features: walkLabels }
-    });
-    map.addLayer({
-      id: 'hotel-walk-line',
-      type: 'line',
-      source: 'hotel-walk-circles',
-      filter: ['==', ['get', 'num'], -1],
-      paint: { 'line-color': '#999', 'line-width': 1, 'line-opacity': 0.45, 'line-dasharray': [4, 4] }
-    });
-    map.addLayer({
-      id: 'hotel-walk-label',
-      type: 'symbol',
-      source: 'hotel-walk-labels',
-      filter: ['==', ['get', 'num'], -1],
-      layout: {
-        'text-field': ['get', 'label'],
-        'text-font': ['DIN Pro Medium', 'Arial Unicode MS Regular'],
-        'text-size': 11,
-        'text-anchor': 'left',
-        'text-offset': [0.3, 0]
-      },
-      paint: { 'text-color': '#999', 'text-opacity': 0.6 }
-    });
-
-    var selectedHotelNum = -1;
-    function showWalkRadius(num){
-      if(num === selectedHotelNum) return;
-      selectedHotelNum = num;
-      map.setFilter('hotel-walk-line', ['==', ['get', 'num'], num]);
-      map.setFilter('hotel-walk-label', ['==', ['get', 'num'], num]);
-    }
-    function hideWalkRadius(){
-      if(selectedHotelNum === -1) return;
-      selectedHotelNum = -1;
-      map.setFilter('hotel-walk-line', ['==', ['get', 'num'], -1]);
-      map.setFilter('hotel-walk-label', ['==', ['get', 'num'], -1]);
-    }
-
-    // — Landmark reference points (visible during hotel phase) —
-    var LANDMARKS = [
-      { name: 'Times Square', coords: [-73.9855, 40.7580] },
-      { name: 'MoMA', coords: [-73.9776, 40.7614] },
-      { name: 'Grand Central', coords: [-73.9772, 40.7527] },
-      { name: 'Rockefeller Center', coords: [-73.9787, 40.7587] },
-      { name: 'Central Park', coords: [-73.9732, 40.7644] },
-      { name: 'St. Patrick\'s Cathedral', coords: [-73.9758, 40.7585] },
-      { name: 'Bryant Park', coords: [-73.9832, 40.7536] },
-      { name: 'Carnegie Hall', coords: [-73.9800, 40.7651] }
-    ];
-    var landmarkEls = [];
-    LANDMARKS.forEach(function(lm){
-      var el = document.createElement('div');
-      el.className = 'landmark-pin';
-      el.innerHTML = '<span class="landmark-pin-dot"></span><span class="landmark-pin-label">' + lm.name + '</span>';
-      new mapboxgl.Marker({ element: el, anchor: 'left' }).setLngLat(lm.coords).addTo(map);
-      landmarkEls.push(el);
-    });
-
-    function updateHotels(show){
-      if(show === hotelsVisible) return;
-      hotelsVisible = show;
-      hotelMarkers.forEach(function(h){
-        if(show) h.el.classList.add('visible');
-        else h.el.classList.remove('visible');
-      });
-      landmarkEls.forEach(function(el){
-        if(show) el.classList.add('visible');
-        else el.classList.remove('visible');
-      });
-      if(!show){
-        hideWalkRadius();
-        if(hotelInfoCard.classList.contains('visible')){
-          hotelInfoCard.classList.remove('visible');
-        }
-      }
-    }
-
-    // — Phase titles —
-    var phaseTitles = {
-      'title-day1':    document.getElementById('title-day1'),
-      'title-day2':    document.getElementById('title-day2'),
-      'title-day3':    document.getElementById('title-day3'),
-      'title-explore': document.getElementById('title-explore'),
-      'title-hotels':  document.getElementById('title-hotels')
-    };
-    function showTitle(id){ var el = phaseTitles[id]; if(el && !el.classList.contains('visible')) el.classList.add('visible'); }
-    function hideTitle(id){ var el = phaseTitles[id]; if(el && el.classList.contains('visible')) el.classList.remove('visible'); }
-    function hideAllTitles(){ for(var k in phaseTitles) hideTitle(k); }
-
-    // — Scroll-driven animation —
-    var section = document.getElementById('slide-map');
-    if(!section) return;
-    var ticking = false;
-    var activeMarker = null;
-    var activeCard = null;
-
-    function onScroll(){
-      if(ticking) return;
-      ticking = true;
-      requestAnimationFrame(function(){
-        var rect = section.getBoundingClientRect();
-        var sectionH = rect.height;
-        var viewH = window.innerHeight;
-        var scrolled = -rect.top;
-        var totalScroll = sectionH - viewH;
-        var t = Math.max(0, Math.min(1, scrolled / totalScroll));
-
-        // Find current phase
-        var cam = null;
-        var currentMarker = null;
-        var currentCard = null;
-        for(var i = 0; i < phases.length; i++){
-          var p = phases[i];
-          if(t >= p.t0 && t <= p.t1){
-            var localT = (t - p.t0) / (p.t1 - p.t0);
-            cam = lerp(p.from, p.to, localT);
-            currentMarker = p.marker;
-            currentCard = p.card;
-            break;
-          }
-        }
-        // If past all phases, hold last state
-        if(!cam){
-          var last = phases[phases.length - 1];
-          cam = last.to;
-          currentMarker = last.marker;
-          currentCard = last.card;
-        }
-
-        // Markers: appear on first zoom-in, never hidden again
-        if(currentMarker) revealMarker(currentMarker);
-
-        // Cards: show only for active venue
-        ['card-union','card-kimmel','card-fasano'].forEach(function(key){
-          if(key === currentCard) showCard(key);
-          else hideCard(key);
-        });
-
-        // Phase titles: show alongside their cards, explore/hotels titles for later phases
-        hideAllTitles();
-        if(currentCard === 'card-union')  showTitle('title-day1');
-        else if(currentCard === 'card-kimmel') showTitle('title-day2');
-        else if(currentCard === 'card-fasano') showTitle('title-day3');
-        var inHotelPhase = t >= 0.93;
-        if(t >= 0.88 && !inHotelPhase) showTitle('title-explore');
-        if(inHotelPhase) showTitle('title-hotels');
-
-        // Route 1 (Wagner→Kimmel): draws during zoom-out after Wagner (t 0.30→0.38)
-        if(t >= 0.38){
-          if(!route1Drawn){ drawRoute('route-1', ROUTE_1, 1); route1Drawn = true; }
-        } else if(t >= 0.30){
-          var rp = (t - 0.30) / (0.38 - 0.30);
-          drawRoute('route-1', ROUTE_1, ease(rp));
-        }
-
-        // Route 2 (Kimmel→Fasano): draws during zoom-out after Kimmel (t 0.58→0.66)
-        if(t >= 0.66){
-          if(!route2Drawn){ drawRoute('route-2', ROUTE_2, 1); route2Drawn = true; }
-        } else if(t >= 0.58){
-          var rp2 = (t - 0.58) / (0.66 - 0.58);
-          drawRoute('route-2', ROUTE_2, ease(rp2));
-        }
-
-        // Move camera
-        map.jumpTo(cam);
-
-        // Show POI dots and neighborhood boundaries during explore phase (0.88-0.93)
-        var inExplore = t >= 0.88 && !inHotelPhase;
-        updatePOIs(inExplore);
-        updateNeighborhoods(inExplore);
-        // Hide route lines when entering explore or hotel phase
-        map.setPaintProperty('route-1-line', 'line-opacity', (t >= 0.88) ? 0 : 0.7);
-        map.setPaintProperty('route-2-line', 'line-opacity', (t >= 0.88) ? 0 : 0.7);
-
-        // Show hotel markers during hotel phase
-        updateHotels(inHotelPhase);
-
-        // Close POI popup when scrolling back before POI phase
-        if(t < 0.88 && poiPopup.classList.contains('visible')){
-          poiPopup.classList.remove('visible');
-        }
-
-        ticking = false;
-      });
-    }
-
-    window.addEventListener('scroll', onScroll, {passive: true});
-    onScroll();
-  });
-})();
 </script>
-
 </body>
 </html>
