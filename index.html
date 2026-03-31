@@ -147,6 +147,46 @@
     color: rgba(255,255,255,0.2); margin-top: 3rem;
   }
 
+  /* ===== SCROLL INDICATOR ===== */
+  .scroll-indicator {
+    position: absolute;
+    bottom: 2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    cursor: pointer;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+    z-index: 2;
+  }
+  .scroll-indicator.hidden { opacity: 0; pointer-events: none; }
+  .scroll-indicator-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.45rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.35);
+  }
+  .scroll-indicator-chevron {
+    width: 1.4rem;
+    height: 1.4rem;
+    animation: scrollBounce 2s ease-in-out infinite;
+  }
+  .scroll-indicator-chevron svg {
+    stroke: rgba(255,255,255,0.35);
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  @keyframes scrollBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(6px); }
+  }
+
   /* ===== TYPOGRAPHY ===== */
   .sn {
     font-family: 'JetBrains Mono', monospace;
@@ -1029,6 +1069,11 @@
   <div class="cover-subtitle" data-lang="en">First Edition</div>
   <div class="cover-subtitle" data-lang="pt">Primeira Edição</div>
   <div class="cover-meta">June 10–13, 2026 · New York City · Confidential</div>
+  </div>
+  <div class="scroll-indicator" id="scroll-indicator" onclick="document.getElementById('slide-why').scrollIntoView({behavior:'smooth'})">
+    <span class="scroll-indicator-label" data-lang="en">Scroll to explore</span>
+    <span class="scroll-indicator-label" data-lang="pt">Role para explorar</span>
+    <span class="scroll-indicator-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
   </div>
 </section>
 
@@ -2105,6 +2150,26 @@ function setLang(lang) {
   window.addEventListener('scroll', updateCover, {passive:true});
   window.addEventListener('resize', function(){ h = window.innerHeight; }, {passive:true});
   updateCover();
+})();
+
+// ===== SCROLL INDICATOR FADE =====
+(function(){
+  var indicator = document.getElementById('scroll-indicator');
+  if(!indicator) return;
+  var ticking = false;
+  window.addEventListener('scroll', function(){
+    if(!ticking){
+      ticking = true;
+      requestAnimationFrame(function(){
+        if(window.scrollY > 80){
+          indicator.classList.add('hidden');
+        } else {
+          indicator.classList.remove('hidden');
+        }
+        ticking = false;
+      });
+    }
+  }, {passive:true});
 })();
 
 // ===== 3D MAP — ZOOM-IN ORBIT AT EACH VENUE =====
